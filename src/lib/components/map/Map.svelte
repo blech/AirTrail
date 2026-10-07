@@ -48,6 +48,7 @@
     getConfiguredAppMapStyleUrl,
     isManagedAppMapStyleUrl,
   } from '$lib/map/app-style';
+  import { classifyBasemapLayers } from '$lib/map/basemap-layers';
   import {
     createMapCameraController,
     type CameraFocusTarget,
@@ -66,6 +67,7 @@
   } from '$lib/map/openaip';
   import { registerPmtilesProtocol } from '$lib/map/pmtiles';
   import {
+    applyStyleLayerVisibility,
     bindRuntimeMapImages,
     bindStyleLayerVisibility,
     supportsMapWebGL,
@@ -296,6 +298,39 @@
       AIRPORT_DETAIL_LAYER_IDS,
       airportDetailVisibility,
     );
+  });
+
+  // The classification is recomputed on every style change so it follows
+  // whichever provider or custom style is loaded. Satellite imagery is raster
+  // only and has nothing to hide.
+  $effect(() => {
+    const m = map;
+    if (!m) {
+      return;
+    }
+
+    const labelsVisibility =
+      mapPreferences.basemapLabels || mapPreferences.basemap !== 'default'
+        ? 'visible'
+        : 'none';
+    const boundariesVisibility =
+      mapPreferences.basemapBoundaries || mapPreferences.basemap !== 'default'
+        ? 'visible'
+        : 'none';
+
+    const sync = () => {
+      const { labels, boundaries } = classifyBasemapLayers(
+        m.getStyle()?.layers ?? [],
+      );
+      applyStyleLayerVisibility(m, labels, labelsVisibility);
+      applyStyleLayerVisibility(m, boundaries, boundariesVisibility);
+    };
+
+    sync();
+    m.on('styledata', sync);
+    return () => {
+      m.off('styledata', sync);
+    };
   });
 
   $effect(() => {

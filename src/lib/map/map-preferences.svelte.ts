@@ -139,6 +139,8 @@ export const MAP_PREFERENCE_DEFINITIONS = {
   projection: choicePreference(projectionOptions, 'mercator'),
   timeOfDayEnabled: booleanPreference(false),
   rainViewerEnabled: booleanPreference(false),
+  basemapLabels: booleanPreference(true),
+  basemapBoundaries: booleanPreference(true),
   airportCircles: choicePreference(airportCircleOptions, 'large'),
   airportCircleRadius: choicePreference(
     airportCircleRadiusOptions,

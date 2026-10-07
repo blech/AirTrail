@@ -24,6 +24,8 @@
     isAdmin?: boolean;
     onOpenIntegrationSettings: () => void;
   } = $props();
+
+  const basemapLayersSupported = $derived(mapPreferences.basemap === 'default');
 </script>
 
 <div class="divide-y divide-border/60">
@@ -60,6 +62,43 @@
       />
     </div>
   </section>
+
+  {#if basemapLayersSupported}
+    <section class="space-y-3 px-4 py-4">
+      <h3
+        class="text-muted-foreground text-[10px] font-medium uppercase tracking-wider"
+      >
+        Basemap
+      </h3>
+      <div class="flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm font-medium leading-none">Labels</p>
+          <p class="text-muted-foreground mt-1 text-[11px]">
+            Place, water, and road names
+          </p>
+        </div>
+        <Switch
+          size="small"
+          checked={mapPreferences.basemapLabels}
+          onCheckedChange={(value) => (mapPreferences.basemapLabels = value)}
+        />
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm font-medium leading-none">Boundaries</p>
+          <p class="text-muted-foreground mt-1 text-[11px]">
+            Country and region borders
+          </p>
+        </div>
+        <Switch
+          size="small"
+          checked={mapPreferences.basemapBoundaries}
+          onCheckedChange={(value) =>
+            (mapPreferences.basemapBoundaries = value)}
+        />
+      </div>
+    </section>
+  {/if}
 
   {#if openAipConfigured}
     <section class="space-y-3 px-4 py-4">
